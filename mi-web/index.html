@@ -1,12 +1,228 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-   <link rel="stylesheet" href="script:src  ">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xaviscoo FC</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#071b16,#102d23,#07111c);
+  color: white;
+  text-align: center;
+}
+
+header {
+  padding: 25px;
+  background: #07130f;
+  border-bottom: 2px solid #b7ff54;
+}
+
+h1 { color: #b7ff54; }
+
+.coins {
+  display: inline-block;
+  background: #263d24;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 20px;
+  margin: 15px;
+}
+
+button {
+  background: #b7ff54;
+  color: #102015;
+  border: none;
+  padding: 13px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 8px;
+}
+
+button:hover { transform: scale(1.06); }
+
+.packs, .collection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.pack {
+  background: linear-gradient(145deg,#314a34,#111d18);
+  border: 2px solid #b7ff54;
+  border-radius: 15px;
+  padding: 20px;
+  width: 210px;
+}
+
+.card {
+  width: 165px;
+  min-height: 235px;
+  padding: 12px;
+  border-radius: 15px;
+  background: linear-gradient(150deg,#ffe9a3,#b58b32,#513c12);
+  color: #211800;
+  border: 4px solid #fff0b0;
+  box-shadow: 0 0 20px #ffcf53;
+}
+
+.card h2 { font-size: 35px; margin: 8px; }
+.card .player { font-size: 21px; font-weight: bold; }
+.card .position { font-size: 13px; }
+
+.card.special {
+  background: linear-gradient(150deg,#d9aaff,#6426a5,#251044);
+  color: white;
+  border-color: #e7caff;
+  box-shadow: 0 0 20px #b65aff;
+}
+
+#result { margin: 25px; }
+#message { color: #b7ff54; min-height: 25px; }
+
+</style>
 </head>
+
 <body>
-    <script class="js"></script>
+
+<header>
+  <h1>⚽ XAVISCOO FC</h1>
+  <p>¡Construye tu equipo definitivo!</p>
+  <div class="coins">🪙 <span id="coins">5000</span></div>
+</header>
+
+<h2>🎁 TIENDA DE SOBRES</h2>
+
+<div class="packs">
+
+  <div class="pack">
+    <h3>🥉 Sobre de oro</h3>
+    <p>3 jugadores</p>
+    <p>750 monedas</p>
+    <button onclick="openPack('gold')">COMPRAR</button>
+  </div>
+
+  <div class="pack">
+    <h3>💎 Sobre especial</h3>
+    <p>5 jugadores</p>
+    <p>2000 monedas</p>
+    <button onclick="openPack('special')">COMPRAR</button>
+  </div>
+
+  <div class="pack">
+    <h3>👑 Sobre de iconos</h3>
+    <p>3 jugadores</p>
+    <p>5000 monedas</p>
+    <button onclick="openPack('icon')">COMPRAR</button>
+  </div>
+
+</div>
+
+<h2>✨ JUGADORES CONSEGUIDOS</h2>
+<div id="message"></div>
+<div id="result" class="collection"></div>
+
+<h2>🏆 MI COLECCIÓN</h2>
+<div id="collection" class="collection"></div>
+
+<script>
+let coins = 5000;
+let players = [];
+
+const footballers = [
+  {name:"Messi",rating:93,pos:"ED"},
+  {name:"Cristiano",rating:91,pos:"DC"},
+  {name:"Mbappé",rating:92,pos:"DC"},
+  {name:"Lamine Yamal",rating:89,pos:"ED"},
+  {name:"Haaland",rating:91,pos:"DC"},
+  {name:"Bellingham",rating:90,pos:"MC"},
+  {name:"Vinicius Jr",rating:91,pos:"EI"},
+  {name:"Pedri",rating:88,pos:"MC"},
+  {name:"Rodri",rating:91,pos:"MCD"},
+  {name:"Neymar",rating:88,pos:"EI"},
+  {name:"Maradona",rating:95,pos:"MCO",special:true},
+  {name:"Pelé",rating:98,pos:"DC",special:true},
+  {name:"Ronaldinho",rating:94,pos:"EI",special:true}
+];
+
+function updateCoins() {
+  document.getElementById("coins").textContent = coins;
+}
+
+function createCard(player) {
+  const card = document.createElement("div");
+  card.className = "card" + (player.special ? " special" : "");
+
+  card.innerHTML = `
+    <h2>${player.rating}</h2>
+    <div class="position">${player.pos}</div>
+    <div style="font-size:48px">⚽</div>
+    <div class="player">${player.name}</div>
+    <p>${player.special ? "ICONO ⭐" : "ORO"}</p>
+  `;
+
+  return card;
+}
+
+function openPack(type) {
+  let price = type === "gold" ? 750 :
+              type === "special" ? 2000 : 5000;
+
+  let amount = type === "special" ? 5 : 3;
+
+  if (coins < price) {
+    document.getElementById("message").textContent =
+      "❌ ¡No tienes suficientes monedas!";
+    return;
+  }
+
+  coins -= price;
+  updateCoins();
+
+  let result = document.getElementById("result");
+  result.innerHTML = "";
+
+  document.getElementById("message").textContent =
+    "🎉 ¡HAS ABIERTO UN SOBRE!";
+
+  for (let i = 0; i < amount; i++) {
+    let available = footballers.filter(p => {
+      if (type === "icon") return p.special;
+      if (type === "gold") return !p.special;
+      return true;
+    });
+
+    let player = available[
+      Math.floor(Math.random() * available.length)
+    ];
+
+    players.push(player);
+
+    result.appendChild(createCard(player));
+  }
+
+  renderCollection();
+}
+
+function renderCollection() {
+  let collection = document.getElementById("collection");
+  collection.innerHTML = "";
+
+  players.forEach(player => {
+    collection.appendChild(createCard(player));
+  });
+}
+
+updateCoins();
+</script>
+
 </body>
 </html>
